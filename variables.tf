@@ -4,7 +4,7 @@ variable "location"{
 
 variable "ami" {
   type = list(string)
-  default = [ "ami-0417ae6382a2d8010", "ami-0417ae6382a2d8010"]
+  default = [ "ami-0c2cf1906dfb3bf2f", "ami-043f007553c48a124"]
 
 }
 
