@@ -1,38 +1,54 @@
 
 
-data "aws_key_pair" "Teehookeypair" {
-  key_name           = "Teehookeypair"
+data "aws_key_pair" "Dev_KP_OH" {
+  key_name           = "Dev_KP_OH"
   include_public_key = true
-
-
 
 }
 resource "aws_instance" "teehoo" {
   ami           = var.ami[count.index]
   instance_type = var.instance_type
-  key_name      = "Teehookeypair"
+  key_name      = "Dev_KP_OH"
   vpc_security_group_ids = [aws_security_group.SG.id]
-  count = length(var.ami)
-   
-  # user_data = <<-EOF 
-  # #!/bin/bash
-  # sudo yum update -y
-  # sudo yum install httpd -y
-  # sudo systemctl start httpd
-  # sudo systemctl enable httpd
-  # EOF
+  
+  count = 2
+  
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo yum update -y",
+  #     "sudo yum install httpd -y",
+  #     "sudo systemctl start httpd",
+  #     "sudo systemctl enable httpd",
+
+  #   ]
+
+  #   connection {
+  #     type = "ssh"
+  #     user = "ec2_user"
+  #     private_key = data.aws_key_pair.Dev_KP_OH
+  #     host = self.public_ip
+  #   }
+    
+  # }
+              
+
 
 
   lifecycle {
-    # create_before_destroy = true
+    create_before_destroy = true
 
     # prevent_destroy = true
 
   }
-
   tags = {
-    Name = "webserver"
+    Name            = "Instance-${count.index}"           # Assign a unique name based on the instance key
+    Ansible-Control-Server = "True"                     # Tag for the control server
+    Ansible-Managed-Server = "True"                     # Tag for the managed server
   }
+  # tags = {
+  #   Name = "Ansible-server"
+  # }
 
 }
 resource "aws_security_group" "SG" {
@@ -76,9 +92,9 @@ resource "aws_security_group" "SG" {
 
 
 
-# output "instance_ip_addr" {
-#   value       = aws_instance.teehoo.private_ip
-#   description = "The private IP address of the main server instance."
-# }
+output "instance_ip_addr" {
+  value       = [for instance in aws_instance.teehoo : instance.private_ip]
+  description = "The private IP address of the main server instance."
+}
 
 

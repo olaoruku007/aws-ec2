@@ -1,14 +1,15 @@
-# variable "re"{
-#    region = "us-east-2"
-# }
+variable "location"{
+   default = "us-east-2"
+}
 
 variable "ami" {
-  default = ["ami-036f5574583e16426", "ami-0a04068a95e6a1cde"]
+  type = list(string)
+  default = [ "ami-0417ae6382a2d8010", "ami-0417ae6382a2d8010"]
 
 }
 
 variable "instance_type" {
-  default = "t2.micro"
+  default = "t2.medium"
 
 }
 
